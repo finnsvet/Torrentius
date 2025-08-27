@@ -194,7 +194,54 @@ struct Connection_state {
 // begin of connection
 Connection_state me_and_peer1 {}; 
 ```
-A block is downloaded by the client when the client is interested in a peer, and that peer is not choking the client. A c
+A block is downloaded by the client when the client is interested in a peer, and that peer is not choking the client, This is the only criteria for a download to occur  i guess, regardless whether or not The client, the downloader, the needer of the data, if choking the remote peer, it wants to download from. This construct enables leechers to be able to participate in the torrent, even when they have nothing to offer, once the have something they can now unchoke peers, to enable reciprocity. 
+
+A block is uploaded by a client when that remote peer is interested and the client is not choking that peer.
+
+It is important for a client to keep its peers informed as to whether or not its interested in them. This state of information should be kept known by the peers even if the client is choked by those peers. This enables the peers to know who is to download from it and to know if the client would begin to download once unchoked (and vice versa).
+
+### Data Types
+Unless specified otherwise, the integers in this protocol are of the big endian variant, they are encodes as 4 byte big-endian values. This include the length prefix on all messages that come after the handsake
+
+### Message Flow
+The peer wire protocol is first initiates by a handshake, after that the ***peers communicate via length prefixed messages.*** 
+
+## Handshake
+A handshakes is a required message and must be the first message sent by the client. It is `49+len(pstr)` bytes long: a handshake:
+```html
+<pstrlen><pstr><reserved><info_hash><peer_id>
+```
+* **pstrlen**: string length of `<pstr>` as a single raw byte
+*  **pstr**: string identifier of the protocol
+* **reserved**: 8 reserved bytes. All current implementations use zeros, Each bit in these bytes can be used to change the behavior of the protocol. An email form bram suggests that the trailing bits be used first, so that leading buts may be used to change the meaning of trailing bits.
+* **info_hash**: 20-byte SHA1 of the info key in the metainfo file. This is the same that is transmitted in tracker requests.
+* **peer_id**: 20-byte string used as a unique ID for the client. This is usually the same peer_id that is transmitted in tracker requests (but not always) for anonymity.
+
+The initiator of a connection is expected to send its handshake immediately ,the recipient may wait for the initiator's handshake, if its capable of serving multiple torrents simultaneously, however the recipient must respond once its sees the `info_hash` part of the handshake (the peer id will be presumably sent after the recipient sends its own handshake).
+
+If a client receives a handshake with an info_has that is not currently serving, then the client must drop the connection.
+
+If the initiator of the connection receives a handshake in which the peer_id does not match the expected `peer_id`, then the initiator is expected to drop the connection.
+
+It should be noted that the initiator presumably receives the peer id of its peers before hand from the tracker's peer information respone. In a handshake the expected `peer_id` from the tracker and the peers actual `peer_id` are expected to match.
+
+### `peer_id`
+There are numerous conventions that propose how a peer id should be written, I will choose mine when implementing the client
+
+## Messages
+All remaining messages in the protocol take the form of:
+```html
+<length prefix><message ID><payload>
+```
+The length prefix is a four byte big-endian value. The message ID is a single decimal byte. The payload is message dependent. Types of messages were discussed earlier in this writ.
+
+## **Algorithms**
+-------------------------------------
+
+## Designing the Client
+
+
 ## References
-1.  The Official bittorrent specification for developers
-2. [Wiki-theory](https://wiki.theory.org/Bithttps://www.bittorrent.org/bittorrentecon.pdfTorrentShttps://wiki.theory.org/Bithttps://www.bittorrent.org/bittorrentecon.pdfTorrentSpecificationpecification
+1.  The Official bittorrent specification for developers, 
+2. [wiki.theory.org: BitTorrent Protocol Specification v1.0 ](https://wiki.theory.org/Bithttps://www.bittorrent.org/bittorrentecon.pdfTorrentShttps://wiki.theory.org/Bithttps://www.bittorrent.org/bittorrentecon.pdfTorrentSpecificationpecification)
+3. The BitTorrent Economic Paper, Incentives Build Robustness in BitTorrent, Bram Cohen. May 22 2003
