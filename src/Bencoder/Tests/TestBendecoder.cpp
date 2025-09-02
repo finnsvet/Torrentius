@@ -3,11 +3,11 @@
 
 int main() {
   Bendata parsed;
-  std::ifstream file{"tes1.ben"};
+  std::ifstream file{"test.ben"};
   assert(file);
   if (!get_bendata_from_stream(file, parsed)) {
     std::cerr << "error in parsing, somethin wrong bobbie";
     return -1;
   }
-  std::cout << parsed;
+  std::cout << parsed << "\n";
 }

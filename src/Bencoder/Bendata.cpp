@@ -25,15 +25,7 @@ Bendata::Bendata(Bendata_init_flag flag) {
   }
 }
 
-template <typename T> T &Bendata::get_data() {
-  T &value = std::get<T>(actual_value);
-  return value;
-}
-
-template <typename T> const T &Bendata::get_data() const {
-  const T &value = std::get<T>(actual_value);
-  return value;
-}
+// templates were here
 
 ben_t Bendata::get_t() const { return _t; }
 

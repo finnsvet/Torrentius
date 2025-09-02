@@ -57,6 +57,16 @@ public:
   friend std::ostream &operator<<(std::ostream &os, const Bendata &ben_object);
 };
 
+template <typename T> T &Bendata::get_data() {
+  T &value = std::get<T>(actual_value);
+  return value;
+}
+
+template <typename T> const T &Bendata::get_data() const {
+  const T &value = std::get<T>(actual_value);
+  return value;
+}
+
 bool bendecode_integer(std::ifstream &, Bendata &);
 bool bendecode_string(std::ifstream &, Bendata &);
 bool bendecode_dictionary(std::ifstream &, Bendata &);
