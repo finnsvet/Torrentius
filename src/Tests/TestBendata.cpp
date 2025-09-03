@@ -1,4 +1,4 @@
-#include "../Bencode.h"
+#include "../Bencoder/Bencode.h"
 
 int main() {
   Bendata ben_int1{Bendata_init_flag::integer};

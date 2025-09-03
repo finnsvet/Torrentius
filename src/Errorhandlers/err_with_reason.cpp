@@ -2,6 +2,6 @@
 #include <iostream>
 
 int error_with_reason(const char *reason) {
-  std::cerr << reason << '\n';
+  std::cout << reason << '\n';
   return -1;
 }

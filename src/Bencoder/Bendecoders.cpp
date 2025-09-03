@@ -1,5 +1,7 @@
 #include "../Errorhandlers/file_parsing_errors.h"
 #include "Bencode.h"
+#include <cctype>
+#include <cwctype>
 
 bool noexcept_stoi(std::string str, int &result) {
   try {
@@ -44,11 +46,21 @@ bool bendecode_integer(std::ifstream &of, Bendata &data) {
   return true;
 }
 
+// peek_skipws returns-> ifstream::peek()
+//    peeks into stream and if a whitsepace is there
+//    it reads "skips" it by reading it and discarding
+//    its value.
+auto peek_skipws(std::ifstream &of) {
+  while (std::iswspace(of.peek()))
+    of.get(); // read that whitespace
+  return of.peek();
+}
+
 bool get_bendata_from_stream(std::ifstream &of, Bendata &data) {
   auto error = [] {
     return error_with_reason("Bro Bendata_from_stream failed");
   };
-  switch (of.peek()) {
+  switch (peek_skipws(of)) {
   case 'i':
     if (!bendecode_integer(of, data))
       return error();
@@ -72,11 +84,11 @@ bool get_bendata_from_stream(std::ifstream &of, Bendata &data) {
 bool bendecode_list(std::ifstream &of, Bendata &data) {
   Bendata new_list{Bendata_init_flag::list};
   ben::lis &ref_list = new_list.get_data<ben::lis>();
+  if (peek_skipws(of) != 'l')
+    return error_with_reason("bro bendecode_list failed");
   char c;
   of >> c;
-  if (c != 'l')
-    return error_with_reason("bro bendecode_list failed");
-  while ((c = of.peek()) != 'e') {
+  while ((c = peek_skipws(of)) != 'e') {
     Bendata new_data{};
     if (!get_bendata_from_stream(of, new_data))
       return false;
@@ -89,7 +101,7 @@ bool bendecode_list(std::ifstream &of, Bendata &data) {
 
 bool get_benkey_from_stream(std::ifstream &of, std::string &key) {
   Bendata data{};
-  switch (of.peek()) {
+  switch (peek_skipws(of)) {
   case 'i':
     if (!bendecode_integer(of, data))
       return error_with_reason("Bro getbenkey from stream failed");
@@ -101,21 +113,22 @@ bool get_benkey_from_stream(std::ifstream &of, std::string &key) {
     key = data.get_data<ben::str>();
     break;
   }
-  return false;
+  return true;
 }
 
 bool bendecode_dictionary(std::ifstream &of, Bendata &data) {
   Bendata new_dict{Bendata_init_flag::dictionary};
   ben::dic &ref_dic = new_dict.get_data<ben::dic>();
+  peek_skipws(of);
   char c;
   of >> c;
-  while ((c = of.peek()) != 'e') {
+  while ((c = peek_skipws(of)) != 'e') {
     ben::str key;
     Bendata new_data{};
     if (!get_benkey_from_stream(of, key))
-      return error_with_reason("Bro bendecode dictionary failed");
+      return error_with_reason("Bro bendecode key dictionary failed");
     if (!get_bendata_from_stream(of, new_data))
-      return error_with_reason("Bro bendecode dictionary failed");
+      return error_with_reason("Bro bendecode data dictionary failed");
     ref_dic[key] = new_data;
   }
   of >> c;
