@@ -34,7 +34,7 @@ enum class Bendata_init_flag { integer, string, dictionary, list };
 using ben_t = char;
 constexpr ben_t BEN_DIC_T = 'd';
 constexpr ben_t BEN_LIS_T = 'l';
-constexpr ben_t BEN_NUM_T = 'n';
+constexpr ben_t BEN_NUM_T = 'i';
 constexpr ben_t BEN_STR_T = 's';
 constexpr ben_t BEN_DELIMETER = 'e';
 

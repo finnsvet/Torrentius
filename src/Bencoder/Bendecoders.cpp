@@ -38,6 +38,7 @@ inline void read_delimeter(std::ifstream &of) {
 }
 
 bool bendecode_integer(std::ifstream &of, Bendata &data) {
+
   read_delimeter(of);
   std::string number_str;
   char c;
@@ -101,11 +102,11 @@ bool bendecode_list(std::ifstream &of, Bendata &data) {
 bool get_benkey_from_stream(std::ifstream &of, std::string &key) {
   Bendata data{};
   switch (peek_skipws(of)) {
-  case 'i':
-    if (!bendecode_integer(of, data))
-      return error_with_reason("get_benkey failed: integer");
-    key = data.get_data<ben::num>();
-    break;
+  // case 'i':
+  //   if (!bendecode_integer(of, data))
+  //     return error_with_reason("get_benkey failed: integer");
+  //   key = data.get_data<ben::num>();
+  //   break;
   default:
     if (!bendecode_string(of, data))
       return error_with_reason("get_benkey failed: string");
