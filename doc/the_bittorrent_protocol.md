@@ -37,7 +37,7 @@ The request include metrics from the client to help the tracker have an overall 
 ## Single file cases and Multi file cases
 In single file cases; `info` key `length` maps to the length of the file in bytes[1].
 
-In the case of Multi file cases (directories with files or such), the multi file constructs is treated as single file by concatenating the files in the order they appear in the file list[1], The file list is the value `files` maps to, it is a list of dictionaries containing the following keys:
+In the case of Multi file cases (directories with files or such), the multi file construct is treated as single file by concatenating the files in the order they appear in the file list[1], The file list is the value `files` maps to, it is a list of dictionaries containing the following keys:
 * `length`: length of file in bytes[1, 2]
 * `path`: list of UTF-8 encoded strings corresponding to sub-directory names, the last of which is the actual file name (a zero length list is an error case)[1]. An example, the file "dir1/dir2/file.ext", would consist of three string elements bencoded as `l4:dir14:dir2:8:file.exte`[2]
 

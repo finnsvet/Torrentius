@@ -29,6 +29,8 @@ Bendata::Bendata(Bendata_init_flag flag) {
 
 ben_t Bendata::get_t() const { return _t; }
 
+const std::string &Bendata::get_encode() const { return bencode; }
+
 std::ostream &operator<<(std::ostream &os, const Bendata &ben_object) {
   switch (ben_object._t) {
   case BEN_STR_T: {

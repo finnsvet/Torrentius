@@ -43,6 +43,7 @@ private:
   std::variant<int, std::string, std::vector<Bendata>,
                std::map<std::string, Bendata>>
       actual_value;
+  std::string bencode;
   ben_t _t;
 
 public:
@@ -54,7 +55,12 @@ public:
   template <typename T> T &get_data();
   template <typename T> const T &get_data() const;
   ben_t get_t() const;
+  const std::string &get_encode() const;
 
+  friend bool bendecode_integer(std::ifstream &, Bendata &);
+  friend bool bendecode_string(std::ifstream &, Bendata &);
+  friend bool bendecode_dictionary(std::ifstream &, Bendata &);
+  friend bool bendecode_list(std::ifstream &, Bendata &);
   friend std::ostream &operator<<(std::ostream &os, const Bendata &ben_object);
 };
 
@@ -68,12 +74,8 @@ template <typename T> const T &Bendata::get_data() const {
   return value;
 }
 
-bool bendecode_integer(std::ifstream &, Bendata &);
-bool bendecode_string(std::ifstream &, Bendata &);
-bool bendecode_dictionary(std::ifstream &, Bendata &);
-bool bendecode_list(std::ifstream &, Bendata &);
-bool get_benkey_from_stream(std::ifstream &, std::string &);
 bool get_bendata_from_stream(std::ifstream &, Bendata &);
+Bendata bendecode_from_file(std::ifstream &);
 
 namespace ben {
 using str = std::string;
